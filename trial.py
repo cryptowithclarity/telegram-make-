@@ -17,17 +17,21 @@ api_hash = "YOUR_API_HASH"
 
 client = TelegramClient('session', api_id, api_hash)
 
+import asyncio
+from telethon import TelegramClient
+
+api_id = YOUR_API_ID
+api_hash = "YOUR_API_HASH"
+
+client = TelegramClient('session', api_id, api_hash)
+
 async def main():
     await client.connect()
     print("🚀 Bot running...")
 
     await client.run_until_disconnected()
 
-import asyncio
 asyncio.run(main())
-    print("🚀 Bot running...")
-
-    await client.run_until_disconnected()
 
 import asyncio
 asyncio.run(main())
