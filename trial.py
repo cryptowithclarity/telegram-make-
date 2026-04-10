@@ -7,7 +7,7 @@ api_hash = '885596e5b35a77727fd5ffa10f718113'
 source_channels = ['odes_ai']
 target_group = -1003831506066  # ✅ FIXED (no quotes)
 
-client = TelegramClient('session_name', api_id, api_hash)
+client = TelegramClient('session', api_id, api_hash)
 
 async def main():
     from telethon import TelegramClient
@@ -27,7 +27,17 @@ client = TelegramClient('session', api_id, api_hash)
 
 async def main():
     await client.connect()
+
+    if not await client.is_user_authorized():
+        print("❌ Session not working")
+        return
+    else:
+        print("✅ Session loaded successfully")
+
     print("🚀 Bot running...")
+    await client.run_until_disconnected()
+
+asyncio.run(main())
 
     await client.run_until_disconnected()
 
