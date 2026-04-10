@@ -12,8 +12,8 @@ client = TelegramClient('session_name', api_id, api_hash)
 async def main():
     from telethon import TelegramClient
 
-api_id = YOUR_API_ID
-api_hash = "YOUR_API_HASH"
+api_id = 20561431
+api_hash = "885596e5b35a77727fd5ffa10f718113"
 
 client = TelegramClient('session', api_id, api_hash)
 
