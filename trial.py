@@ -31,39 +31,47 @@ async def handler(event):
         print("📩 New message received")
 
         # ❌ Skip voice/video
-        if msg.voice or msg.video:
-            return
+# 🔥 YOUR BRANDING FOOTER
+FOOTER = """
 
-        # 🧠 Get text/caption
-        text = msg.message or msg.caption or ""
+━━━━━━━━━━━━━━━
+❌ X :- https://x.com/CryptoWSarvesh  
+🚀 Instagram :- https://www.instagram.com/cryptowithsarvesh/  
+❤️ YouTube :- https://www.youtube.com/@CryptoWithSarvesh_ind
+"""
 
-        if not text:
-            return
 
-        # ❌ Filters
-        if "http" in text.lower():
-            return
+@client.on(events.NewMessage(chats=source_channel))
+async def handler(event):
+    try:
+        msg = event.message
+        print("📩 New message received")
 
-        if any(x in text.lower() for x in ["follow", "subscribe", "join"]):
-            return
+        # ❌ Skip voice/video
+# 🔥 Add your branding footer
+FOOTER = """
 
-        # ✅ Add branding footer
-        final_caption = text + FOOTER
+━━━━━━━━━━━━━━━
+❌ X :- https://x.com/CryptoWSarvesh  
+🚀 Instagram :- https://www.instagram.com/cryptowithsarvesh/  
+❤️ YouTube :- https://www.youtube.com/@CryptoWithSarvesh_ind
+"""
 
-        # 🥇 BEST METHOD: Download → Send as DOCUMENT (No compression)
-        if msg.media:
-            file = await client.download_media(msg, file=bytes)
+# 🧠 Final caption
+final_caption = (text or "") + FOOTER
 
-            await client.send_file(
-                target_group,
-                file,
-                caption=final_caption,
-                force_document=True  # 🔥 NO COMPRESSION
-            )
-        else:
-            await client.send_message(
-                target_group,
-                final_caption
+# ✅ SEND IMAGE + TEXT (Make Compatible)
+if msg.media:
+    await client.send_file(
+        target_group,
+        msg.media,        # ✅ IMPORTANT (not bytes)
+        caption=final_caption
+    )
+else:
+    await client.send_message(
+        target_group,
+        final_caption
+    )
             )
 
         print("✅ Sent in HIGH QUALITY with branding")
