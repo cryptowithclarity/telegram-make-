@@ -1,80 +1,45 @@
 import asyncio
 from telethon import TelegramClient, events
 
-api_id = 20561431
-api_hash = '885596e5b35a77727fd5ffa10f718113'
-
-source_channels = ['odes_ai']
-target_group = -1003831506066  # ✅ FIXED (no quotes)
-
-client = TelegramClient('session', api_id, api_hash)
-
-async def main():
-    from telethon import TelegramClient
-
+# 🔑 YOUR API DETAILS
 api_id = 20561431
 api_hash = "885596e5b35a77727fd5ffa10f718113"
 
+# 📡 SOURCE CHANNEL (WITHOUT @)
+source_channel = "odes_ai"
+
+# 🎯 TARGET GROUP (PRIVATE GROUP ID FOR MAKE)
+target_group = -1003831506066
+
+# 🤖 CLIENT (must match your session file name: session.session)
 client = TelegramClient('session', api_id, api_hash)
 
-import asyncio
-from telethon import TelegramClient
 
-api_id = 20561431
-api_hash = "885596e5b35a77727fd5ffa10f718113"
-
-client = TelegramClient('session', api_id, api_hash)
-
-async def main():
-    await client.connect()
-
-    if not await client.is_user_authorized():
-        print("❌ Session not working")
-        return
-    else:
-        print("✅ Session loaded successfully")
-
-    print("🚀 Bot running...")
-    await client.run_until_disconnected()
-
-asyncio.run(main())
-
-    await client.run_until_disconnected()
-
-asyncio.run(main())
-
-import asyncio
-asyncio.run(main())
-
-
-async def print_dialogs():
-    dialogs = await client.get_dialogs()
-    print("\n📌 YOUR TELEGRAM DIALOGS:\n")
-    for d in dialogs:
-        print(f"Name: {d.name} | ID: {d.id}")
-    print("\n👉 Copy your group ID from above\n")
-
-
-@client.on(events.NewMessage(chats=source_channels))
+@client.on(events.NewMessage(chats=source_channel))
 async def handler(event):
     try:
         msg = event.message
 
+        print("📩 New message received")
+
+        # ❌ Skip voice/video
         if msg.voice or msg.video:
             return
 
+        # 🧠 Get text or caption
         text = msg.message or msg.caption or ""
 
         if not text:
             return
 
+        # ❌ Skip unwanted content
         if "http" in text.lower():
             return
 
         if any(x in text.lower() for x in ["follow", "subscribe", "join"]):
             return
 
-        # ✅ SEND MESSAGE PROPERLY
+        # ✅ SEND MESSAGE (NOT FORWARD)
         if msg.media:
             await client.send_file(
                 target_group,
@@ -87,6 +52,8 @@ async def handler(event):
                 text
             )
 
+        print("✅ Sent to group")
+
         await asyncio.sleep(2)
 
     except Exception as e:
@@ -94,11 +61,15 @@ async def handler(event):
 
 
 async def main():
-    await client.start()
-    print("🚀 Telethon Running...\n")
+    await client.connect()
 
-    # optional (can remove later)
-    await print_dialogs()
+    # ✅ Check session
+    if not await client.is_user_authorized():
+        print("❌ Session not working")
+        return
+
+    print("✅ Session loaded successfully")
+    print("🚀 Bot running...")
 
     await client.run_until_disconnected()
 
