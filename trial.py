@@ -5,54 +5,68 @@ from telethon import TelegramClient, events
 api_id = 20561431
 api_hash = "885596e5b35a77727fd5ffa10f718113"
 
-# 📡 SOURCE CHANNEL (WITHOUT @)
+# 📡 SOURCE CHANNEL
 source_channel = "odes_ai"
 
-# 🎯 TARGET GROUP (PRIVATE GROUP ID FOR MAKE)
+# 🎯 TARGET GROUP
 target_group = -1003831506066
 
-# 🤖 CLIENT (must match your session file name: session.session)
 client = TelegramClient('session', api_id, api_hash)
+
+
+# 🔥 YOUR BRANDING FOOTER
+FOOTER = """
+
+━━━━━━━━━━━━━━━
+❌ X :- https://x.com/CryptoWSarvesh  
+🚀 Instagram :- https://www.instagram.com/cryptowithsarvesh/  
+❤️ YouTube :- https://www.youtube.com/@CryptoWithSarvesh_ind
+"""
 
 
 @client.on(events.NewMessage(chats=source_channel))
 async def handler(event):
     try:
         msg = event.message
-
         print("📩 New message received")
 
         # ❌ Skip voice/video
         if msg.voice or msg.video:
             return
 
-        # 🧠 Get text or caption
+        # 🧠 Get text/caption
         text = msg.message or msg.caption or ""
 
         if not text:
             return
 
-        # ❌ Skip unwanted content
+        # ❌ Filters
         if "http" in text.lower():
             return
 
         if any(x in text.lower() for x in ["follow", "subscribe", "join"]):
             return
 
-        # ✅ SEND MESSAGE (NOT FORWARD)
+        # ✅ Add branding footer
+        final_caption = text + FOOTER
+
+        # 🥇 BEST METHOD: Download → Send as DOCUMENT (No compression)
         if msg.media:
+            file = await client.download_media(msg, file=bytes)
+
             await client.send_file(
                 target_group,
-                msg.media,
-                caption=text
+                file,
+                caption=final_caption,
+                force_document=True  # 🔥 NO COMPRESSION
             )
         else:
             await client.send_message(
                 target_group,
-                text
+                final_caption
             )
 
-        print("✅ Sent to group")
+        print("✅ Sent in HIGH QUALITY with branding")
 
         await asyncio.sleep(2)
 
@@ -63,7 +77,6 @@ async def handler(event):
 async def main():
     await client.connect()
 
-    # ✅ Check session
     if not await client.is_user_authorized():
         print("❌ Session not working")
         return
