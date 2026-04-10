@@ -1,20 +1,21 @@
 import asyncio
 from telethon import TelegramClient, events
 
-# 🔑 YOUR API DETAILS
+# 🔑 API DETAILS
 api_id = 20561431
 api_hash = "885596e5b35a77727fd5ffa10f718113"
 
-# 📡 SOURCE CHANNEL
+# 📡 SOURCE CHANNEL (without @)
 source_channel = "odes_ai"
 
-# 🎯 TARGET GROUP
+# 🎯 TARGET GROUP (Make reads from here)
 target_group = -1003831506066
 
+# 🤖 TELETHON CLIENT
 client = TelegramClient('session', api_id, api_hash)
 
 
-# 🔥 YOUR BRANDING FOOTER
+# 🔥 BRANDING FOOTER
 FOOTER = """
 
 ━━━━━━━━━━━━━━━
@@ -30,51 +31,54 @@ async def handler(event):
         msg = event.message
         print("📩 New message received")
 
-        # ❌ Skip voice/video
-# 🔥 YOUR BRANDING FOOTER
-FOOTER = """
+        # ❌ Skip unwanted media
+        if msg.voice or msg.video:
+            return
 
-━━━━━━━━━━━━━━━
-❌ X :- https://x.com/CryptoWSarvesh  
-🚀 Instagram :- https://www.instagram.com/cryptowithsarvesh/  
-❤️ YouTube :- https://www.youtube.com/@CryptoWithSarvesh_ind
-"""
+        # 🧠 Extract text/caption
+        text = msg.message or msg.caption or ""
 
+        if not text:
+            return
 
-@client.on(events.NewMessage(chats=source_channel))
-async def handler(event):
-    try:
-        msg = event.message
-        print("📩 New message received")
+        # ❌ Filter unwanted content
+        if "http" in text.lower():
+            return
 
-        # ❌ Skip voice/video
-# 🔥 Add your branding footer
-FOOTER = """
+        if any(x in text.lower() for x in ["follow", "subscribe", "join"]):
+            return
 
-━━━━━━━━━━━━━━━
-❌ X :- https://x.com/CryptoWSarvesh  
-🚀 Instagram :- https://www.instagram.com/cryptowithsarvesh/  
-❤️ YouTube :- https://www.youtube.com/@CryptoWithSarvesh_ind
-"""
+        # ✅ Add branding
+        final_caption = text + FOOTER
 
-# 🧠 Final caption
-final_caption = (text or "") + FOOTER
+        # ============================
+        # ✅ IMAGE + TEXT (MAIN FIX)
+        # ============================
 
-# ✅ SEND IMAGE + TEXT (Make Compatible)
-if msg.media:
-    await client.send_file(
-        target_group,
-        msg.media,        # ✅ IMPORTANT (not bytes)
-        caption=final_caption
-    )
-else:
-    await client.send_message(
-        target_group,
-        final_caption
-    )
+        if msg.photo:
+            # 📷 Send as PHOTO (Make compatible)
+            await client.send_file(
+                target_group,
+                msg.photo,
+                caption=final_caption
             )
 
-        print("✅ Sent in HIGH QUALITY with branding")
+        elif msg.document:
+            # 📁 If image comes as file
+            await client.send_file(
+                target_group,
+                msg.document,
+                caption=final_caption
+            )
+
+        else:
+            # 📝 Text only
+            await client.send_message(
+                target_group,
+                final_caption
+            )
+
+        print("✅ Sent successfully (Image + Text + Branding)")
 
         await asyncio.sleep(2)
 
@@ -86,7 +90,7 @@ async def main():
     await client.connect()
 
     if not await client.is_user_authorized():
-        print("❌ Session not working")
+        print("❌ Session not authorized")
         return
 
     print("✅ Session loaded successfully")
